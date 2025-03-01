@@ -6,7 +6,7 @@ from database import engine,SessionLocal
 from typing import Annotated
 from sqlalchemy.orm import Session
 from pydantic import BaseModel,Field
-from routers.auth import router as auth_router
+from fastapi import APIRouter
 from .auth import router as auth_router
 
 router=APIRouter(
