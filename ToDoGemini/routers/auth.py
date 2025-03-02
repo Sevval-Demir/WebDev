@@ -1,11 +1,11 @@
-from fastapi import APIRouter
+from fastapi import APIRouter,HTTPException
 from fastapi.params import Depends
 from pydantic import BaseModel
 from typing import Annotated
 from sqlalchemy.orm import Session
 from sqlalchemy.testing import db
 from starlette import status
-
+from fastapi.security import OAuth2PasswordRequestForm,OAuth2PasswordBearer
 from database import SessionLocal
 from models import User
 from passlib.context import CryptContext
@@ -55,3 +55,13 @@ async def create_user(db:db_dependency,create_user_request:CreateUserRequest):
     )
     db.add(user)
     db.commit()
+
+@router.post("/token")
+async def login_for_access_token(form_data:Annotated[OAuth2PasswordRequestForm,Depends()],
+    db:db_dependency):
+    user=authenticate_user(form_data.username,form_data.password,db)
+    if not user:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,detail="Incorrect username or password")
+    token=""
+    return {"access_token":token,"token_type":"bearer"}
+
