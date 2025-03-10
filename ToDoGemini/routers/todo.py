@@ -1,72 +1,25 @@
-from http.client import HTTPException
-from fastapi import APIRouter,Depends,Path
-from starlette import status
-from models import Base,ToDo
-from database import engine,SessionLocal
-from typing import Annotated
-from sqlalchemy.orm import Session
-from pydantic import BaseModel,Field
-from fastapi import APIRouter
-from .auth import router as auth_router
+from database import Base
+from sqlalchemy import Column, Integer, String, Boolean, ForeignKey
 
-router=APIRouter(
-    prefix="/todo",
-    tags=["ToDo"]
-)
 
-class ToDoRequest(BaseModel):
-    title:str=Field(min_length=3)
-    description:str=Field(min_length=3,max_length=1000)
-    priority:int=Field(gt=0,lt=6)
-    complete:bool
+class ToDo(Base):
+    __tablename__ = 'todos'
 
-def get_db():
-    db=SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
+    id=Column(Integer,primary_key=True,index=True)
+    title=Column(String)
+    description=Column(String)
+    priority=Column(Integer)
+    complete=Column(Boolean,default=False)
+    owner_id=Column(Integer,ForeignKey('users.id'))
 
-db_dependency=Annotated[Session,Depends(get_db)]
+class User(Base):
+    __tablename__='users'
 
-@router.get("/read_all")
-async def read_all(db:db_dependency):
-    return db.query(ToDo).all()
-
-@router.get("/get_by_id/{todo_id}",status_code=status.HTTP_200_OK)
-async def read_by_id(db:db_dependency,todo_id:int=Path(gt=0)):
-    todo=db.query(ToDo).filter(ToDo.id==todo_id).first()
-    if todo is not None:
-        return todo
-    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail="ToDo not found")
-
-@router.post("/create_todo",status_code=status.HTTP_201_CREATED)
-async def create_todo(db:db_dependency,todo_request:ToDoRequest):
-    todo=ToDo(**todo_request.dict())
-    db.add(todo)
-    db.commit()
-
-@router.put("/update_todo/{todo_id}",status_code=status.HTTP_204_NO_CONTENT)
-async def update_todo(db:db_dependency,
-                      todo_request:ToDoRequest,
-                      todo_id:int=Path(gt=0)):
-    todo=db.query(ToDo).filter(ToDo.id==todo_id).first()
-    if todo is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail="ToDo not found")
-
-    todo.title=todo_request.title
-    todo.description=todo_request.description
-    todo.priority=todo_request.priority
-    todo.complete=todo_request.complete
-
-    db.add(todo)
-    db.commit()
-
-@router.delete("/delete_todo/{todo_id}",status_code=status.HTTP_204_NO_CONTENT)
-async def delete_todo(db:db_dependency,todo_id:int=Path(gt=0)):
-    todo=db.query(ToDo).filter(ToDo.id==todo_id).first()
-    if todo is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail="ToDo not found")
-    #db.query(ToDo).filter(ToDo.id==todo_id).delete()
-    db.delete()
-    db.commit()
+    id=Column(Integer,primary_key=True,index=True)
+    email=Column(String,unique=True)
+    username=Column(String,unique=True)
+    first_name=Column(String)
+    last_name=Column(String)
+    hashed_password=Column(String)
+    is_active=Column(Boolean,default=True)
+    role=Column(String)

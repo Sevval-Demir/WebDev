@@ -2,7 +2,7 @@ from database import Base
 from sqlalchemy import Column, Integer, String, Boolean, ForeignKey
 
 
-class ToDo(Base):
+class todo(Base):
     __tablename__ = 'todos'
 
     id=Column(Integer,primary_key=True,index=True)
@@ -23,3 +23,5 @@ class User(Base):
     hashed_password=Column(String)
     is_active=Column(Boolean,default=True)
     role=Column(String)
+
+
