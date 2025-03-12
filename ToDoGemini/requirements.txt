@@ -20,4 +20,3 @@ markdown==3.7
 bs4==0.0.2
 alembic==1.13.2
 router==0.1.0
-aiohttp==3.8.5
