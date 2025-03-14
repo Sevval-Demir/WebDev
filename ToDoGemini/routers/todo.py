@@ -1,12 +1,13 @@
 from fastapi import APIRouter, Depends, Path, HTTPException, Request, Response
 from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
+from sqlalchemy.sql.functions import user
 from starlette import status
 from starlette.responses import RedirectResponse
-from models import Base, ToDo
-from database import engine, SessionLocal
+from ..models import Base, ToDo
+from ..database import engine, SessionLocal
 from typing import Annotated
-from routers.auth import get_current_user
+from ..routers.auth import get_current_user
 from fastapi.templating import Jinja2Templates
 from dotenv import load_dotenv
 import google.generativeai as genai
@@ -51,14 +52,10 @@ def redirect_to_login():
 
 @router.get("/todo-page")
 async def render_todo_page(request: Request, db: db_dependency):
-    try:
-        user = await get_current_user(request.cookies.get('access_token'))
         if user is None:
             return redirect_to_login()
         todos = db.query(ToDo).filter(ToDo.owner_id == user.get('id')).all()
         return templates.TemplateResponse("todo.html", {"request": request, "todos": todos, "user": user})
-    except:
-        return redirect_to_login()
 
 
 @router.get("/add-todo-page")
