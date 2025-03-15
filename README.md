@@ -27,9 +27,6 @@ WebDev, **Google Yapay Zeka ve Teknoloji Akademisi**'nde FastAPI eğitimi kapsam
    ```bash
    uvicorn app.main:app --reload
    ```
-4. **API Dokümantasyonu için aşağıdaki URL’yi ziyaret edin:**
-   - Swagger UI: [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
-   - Redoc: [http://127.0.0.1:8000/redoc](http://127.0.0.1:8000/redoc)
 
 ## 📬 İletişim
 Herhangi bir geri bildiriminiz veya öneriniz varsa benimle iletişime geçebilirsiniz:
