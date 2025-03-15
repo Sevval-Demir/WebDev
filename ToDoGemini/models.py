@@ -1,5 +1,5 @@
 from sqlalchemy import Column, Integer, String, Boolean, ForeignKey
-from .database import Base  # ✅ Import hatası giderildi.
+from database import Base
 
 class ToDo(Base):
     __tablename__ = 'todos'

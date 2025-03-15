@@ -1,17 +1,17 @@
-from fastapi import FastAPI,Depends,Path,HTTPException
+from fastapi import FastAPI,Depends,Path,HTTPException,Request
 from pydantic import BaseModel,Field
 from sqlalchemy.orm import Session
 from starlette import status
 from starlette.responses import RedirectResponse
-from .models import Base,ToDo
-from .database import engine,SessionLocal
-from .routers.auth import router as auth_router
-from .routers.todo import router as todo_router
+from models import Base,ToDo
+from database import engine,SessionLocal
+from routers.auth import router as auth_router
+from routers.todo import router as todo_router
 from fastapi.security import OAuth2PasswordBearer,OAuth2PasswordRequestForm
 from fastapi.staticfiles import StaticFiles
 import os
 
-app=FastAPI()
+app=FastAPI(debug=True)
 
 script_dir=os.path.dirname(__file__)
 st_abs_file_path=os.path.join(script_dir,"static/")
